@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+<canvas id="canvas"></canvas>
+<label for="uploader">Select file:</label>
+<input type="file" id="uploader" />
+<button>Download</button>
+
+<script>
+    const canvas = document.getElementById("canvas");
+      const ctx = canvas.getContext("2d");
+
+
+      const reader = new FileReader();
+      const img = new Image();
+
+
+      const uploadImage = (e) => {
+        reader.onload = () => {
+          img.onload = () => {
+            canvas.width = img.width;
+            canvas.height = img.height;
+            ctx.drawImage(img, 0, 0);
+          };
+          img.src = reader.result;
+        };
+        reader.readAsDataURL(e.target.files[0]);
+      };
+
+
+      const imageLoader = document.getElementById("uploader");
+      imageLoader.addEventListener("change", uploadImage);
+
+
+      function download() {
+        const image = canvas.toDataURL();
+        const link = document.createElement("a");
+        link.href = image;
+        link.download = "image.png";
+        link.click();
+      }
+
+
+      document.querySelector("button").addEventListener("click", download);
+</script>
+</body>
+</html>

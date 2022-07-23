@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+
+</head>
+<body>
+<a>
+    <img src="test_house - Copy.png"  alt="My Image"></a>
+    <!--<button onclick="createCircle()">Circle </button>  -->
+
+    <script>
+        const arr=[];
+        document.ready(function() {
+        document.querySelector("img").addEventListener("click", (event)
+    {
+        let x = event.pageX - this.offsetLeft;
+        let y = event.pageY - this.offsetTop;
+        y=720-y;
+        arr.push([x,y]);
+        console.log(arr);
+
+        alert("X Coordinate: " + x + " Y Coordinate: " + y);
+
+
+    });
+});
+</script>
+</body>
+
+</html>
