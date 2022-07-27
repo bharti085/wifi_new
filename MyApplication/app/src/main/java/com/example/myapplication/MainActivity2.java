@@ -1,7 +1,5 @@
 package com.example.myapplication;
 
-import com.example.myapplication.MyGestureListener;
-
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GestureDetectorCompat;
@@ -18,7 +16,6 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.Toast;
 //import static com.github.karthyks.runtimepermissions.PermissionActivity.REQUEST_PERMISSION_CODE;
 
@@ -68,7 +65,7 @@ public class MainActivity2 extends AppCompatActivity {
     Button buttonM;
     Button bt;
     Button buttonCal;
-    List results;
+    List<ScanResult> results;
     int i = 1;
     //    Button bt;
     Handler handler;
@@ -102,17 +99,26 @@ public class MainActivity2 extends AppCompatActivity {
         imageView2 = (ImageView) findViewById(R.id.imageView2);
         Bundle extras = getIntent().getExtras();
         myUri = Uri.parse(extras.getString("EXTRA_IMAGEVIEW_URL"));
+        System.out.println("1");
+        System.out.println("1");
         imageView2.setImageURI(myUri);
         System.out.println("1");
         System.out.println("1");
         Log.i("url", String.valueOf(myUri));
-//        addTouchListener();
+
         buttonCal = (Button) findViewById(R.id.buttonheatmap);
         progress = new ProgressDialog(MainActivity2.this);
         buttonCal.setEnabled(false);
         mDetector = new GestureDetectorCompat(this, new MyGestureListener());
-
-
+        buttonCal.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+//                base64=fileUriToBase64(myUri, resolver);
+//                Log.d("Bharti", base64);
+                addRecord();
+                startActivity(new Intent(MainActivity2.this, HeatMapActivity.class));
+            }
+        });
     }
 
 
@@ -292,73 +298,89 @@ public class MainActivity2 extends AppCompatActivity {
         }
     }
 
-    public static String fileUriToBase64(Uri uri, ContentResolver resolver) {
-        String encodedBase64 = "";
-        try {
-            byte[] bytes = readBytes(uri, resolver);
-            encodedBase64 = Base64.encodeToString(bytes, 0);
-        } catch (IOException e1) {
-            e1.printStackTrace();
-        }
-        return encodedBase64;
-    }
+//    public static String fileUriToBase64(Uri uri, ContentResolver resolver) {
+//        Log.d("bharti","1");
+//        String encodedBase64 = "";
+//        try {
+//            Log.d("bharti","2");
+//            byte[] bytes = readBytes(uri, resolver);
+//            Log.d("bharti","3");
+//            encodedBase64 = Base64.encodeToString(bytes, 0);
+//            Log.d("bharti","4");
+//        } catch (IOException e1) {
+//            e1.printStackTrace();
+//        }
+//        return encodedBase64;
+//    }
 
-    public static byte[] readBytes(Uri uri, ContentResolver resolver)
-            throws IOException {
-        // this dynamically extends to take the bytes you read
-        InputStream inputStream = resolver.openInputStream(uri);
-        ByteArrayOutputStream byteBuffer = new ByteArrayOutputStream();
-
-        // this is storage overwritten on each iteration with bytes
-        int bufferSize = 1024;
-        byte[] buffer = new byte[bufferSize];
-
-        // we need to know how may bytes were read to write them to the
-        // byteBuffer
-        int len = 0;
-        while ((len = inputStream.read(buffer)) != -1) {
-            byteBuffer.write(buffer, 0, len);
-        }
-
-        // and then we can return your byte array.
-        return byteBuffer.toByteArray();
-    }
+//    public static byte[] readBytes(Uri uri, ContentResolver resolver)
+//            throws IOException {
+//        // this dynamically extends to take the bytes you read
+//        Log.d("uri", String.valueOf(uri));
+//        InputStream inputStream = resolver.openInputStream(uri);
+//        Log.d("bharti","5");
+//        ByteArrayOutputStream byteBuffer = new ByteArrayOutputStream();
+//        Log.d("bharti","6");
+//
+//        // this is storage overwritten on each iteration with bytes
+//        int bufferSize = 1024;
+//        byte[] buffer = new byte[bufferSize];
+//
+//        // we need to know how may bytes were read to write them to the
+//        // byteBuffer
+//        int len = 0;
+//        while ((len = inputStream.read(buffer)) != -1) {
+//            byteBuffer.write(buffer, 0, len);
+//        }
+//        Log.d("bharti","7");
+//        // and then we can return your byte array.
+//        return byteBuffer.toByteArray();
+//    }
 
 
     public void checkEnabled() {
-        if (i > 10) {
+        if (i > 3) {
             buttonCal.setEnabled(true);
         }
     }
+
+//    private void addTouchListener() {
+        private void addRecord() {
+            Log.d("bharti","8");
+            Log.d("bharti", String.valueOf(file));
+                File files = new File(String.valueOf(file));
+            Log.d("bharti", String.valueOf(files));
+                RequestBody requestBody = RequestBody.create(MediaType.parse("*/*"), files);
+            Log.d("bharti", String.valueOf(requestBody));
+            Log.d("bharti","9");
+                MultipartBody.Part fileToUpload = MultipartBody.Part.createFormData("file", files.getName(), requestBody);
+            Log.d("bharti", String.valueOf(fileToUpload));
+            Log.d("bharti","10");
+                RequestBody someData = RequestBody.create(MediaType.parse("text/plain"), String.valueOf(myUri));
+            Log.d("bharti", String.valueOf(someData));
+            Log.d("bharti","11");
+                apiCall getResponse = apiCall.getRetrofit().create(apiCall.class);
+            Log.d("bharti","12");
+                Call<ResponseBody> call = getResponse.addRecord(fileToUpload, someData);
+            Log.d("bharti","13");
+
+                call.enqueue(new Callback<ResponseBody>() {
+                    @Override
+                    public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                        Log.d("Response", "=" + response.code());
+                        Log.d("Response", "= " + response.message());
+                    }
+
+                    @Override
+                    public void onFailure(Call<ResponseBody> call, Throwable t) {
+                        Log.d("failure", "message = " + t.getMessage());
+                        Log.d("failure", "cause = " + t.getCause());
+                    }
+                });
+            }
+//        });
+//    }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 //
