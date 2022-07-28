@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
+import android.view.ScaleGestureDetector;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -57,6 +58,8 @@ import retrofit2.Response;
 
 public class MainActivity2 extends AppCompatActivity {
     private GestureDetectorCompat mDetector;
+    private ScaleGestureDetector scaleGestureDetector;
+    private float mScaleFactor = 1.0f;
     private Button permissions;
     MyGestureListener ob = new MyGestureListener();
     ImageView imageView2;
@@ -105,18 +108,20 @@ public class MainActivity2 extends AppCompatActivity {
         System.out.println("1");
         System.out.println("1");
         Log.i("url", String.valueOf(myUri));
+        resolver = getContentResolver();
 
         buttonCal = (Button) findViewById(R.id.buttonheatmap);
         progress = new ProgressDialog(MainActivity2.this);
         buttonCal.setEnabled(false);
         mDetector = new GestureDetectorCompat(this, new MyGestureListener());
+        scaleGestureDetector = new ScaleGestureDetector(this, new ScaleListener());
         buttonCal.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-//                base64=fileUriToBase64(myUri, resolver);
-//                Log.d("Bharti", base64);
+                base64=fileUriToBase64(myUri, resolver);
+                Log.d("Bharti", base64);
                 addRecord();
-                startActivity(new Intent(MainActivity2.this, HeatMapActivity.class));
+//                startActivity(new Intent(MainActivity2.this, HeatMapActivity.class));
             }
         });
     }
@@ -125,7 +130,23 @@ public class MainActivity2 extends AppCompatActivity {
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         this.mDetector.onTouchEvent(event);
+        scaleGestureDetector.onTouchEvent(event);
         return super.onTouchEvent(event);
+    }
+//    @Override
+//    public boolean onTouchEvent(MotionEvent motionEvent) {
+//        scaleGestureDetector.onTouchEvent(motionEvent);
+//        return true;
+//    }
+    private class ScaleListener extends ScaleGestureDetector.SimpleOnScaleGestureListener {
+        @Override
+        public boolean onScale(ScaleGestureDetector scaleGestureDetector) {
+            mScaleFactor *= scaleGestureDetector.getScaleFactor();
+            mScaleFactor = Math.max(0.1f, Math.min(mScaleFactor, 10.0f));
+            imageView2.setScaleX(mScaleFactor);
+            imageView2.setScaleY(mScaleFactor);
+            return true;
+        }
     }
 
     public class MyGestureListener extends GestureDetector.SimpleOnGestureListener {
@@ -280,7 +301,7 @@ public class MainActivity2 extends AppCompatActivity {
 
         try {
             System.out.println("2");
-            OutputStreamWriter file_writer = new OutputStreamWriter(new FileOutputStream(file, false));
+            OutputStreamWriter file_writer = new OutputStreamWriter(new FileOutputStream(file, true));
             System.out.println("3");
             BufferedWriter buffered_writer = new BufferedWriter(file_writer);
             System.out.println("4");
@@ -298,44 +319,44 @@ public class MainActivity2 extends AppCompatActivity {
         }
     }
 
-//    public static String fileUriToBase64(Uri uri, ContentResolver resolver) {
-//        Log.d("bharti","1");
-//        String encodedBase64 = "";
-//        try {
-//            Log.d("bharti","2");
-//            byte[] bytes = readBytes(uri, resolver);
-//            Log.d("bharti","3");
-//            encodedBase64 = Base64.encodeToString(bytes, 0);
-//            Log.d("bharti","4");
-//        } catch (IOException e1) {
-//            e1.printStackTrace();
-//        }
-//        return encodedBase64;
-//    }
+    public static String fileUriToBase64(Uri uri, ContentResolver resolver) {
+        Log.d("bharti","1");
+        String encodedBase64 = "";
+        try {
+            Log.d("bharti","2");
+            byte[] bytes = readBytes(uri, resolver);
+            Log.d("bharti","3");
+            encodedBase64 = Base64.encodeToString(bytes, 0);
+            Log.d("bharti","4");
+        } catch (IOException e1) {
+            e1.printStackTrace();
+        }
+        return encodedBase64;
+    }
 
-//    public static byte[] readBytes(Uri uri, ContentResolver resolver)
-//            throws IOException {
-//        // this dynamically extends to take the bytes you read
-//        Log.d("uri", String.valueOf(uri));
-//        InputStream inputStream = resolver.openInputStream(uri);
-//        Log.d("bharti","5");
-//        ByteArrayOutputStream byteBuffer = new ByteArrayOutputStream();
-//        Log.d("bharti","6");
-//
-//        // this is storage overwritten on each iteration with bytes
-//        int bufferSize = 1024;
-//        byte[] buffer = new byte[bufferSize];
-//
-//        // we need to know how may bytes were read to write them to the
-//        // byteBuffer
-//        int len = 0;
-//        while ((len = inputStream.read(buffer)) != -1) {
-//            byteBuffer.write(buffer, 0, len);
-//        }
-//        Log.d("bharti","7");
-//        // and then we can return your byte array.
-//        return byteBuffer.toByteArray();
-//    }
+    public static byte[] readBytes(Uri uri, ContentResolver resolver)
+            throws IOException {
+        // this dynamically extends to take the bytes you read
+        Log.d("uri", String.valueOf(uri));
+        InputStream inputStream = resolver.openInputStream(uri);
+        Log.d("bharti","5");
+        ByteArrayOutputStream byteBuffer = new ByteArrayOutputStream();
+        Log.d("bharti","6");
+
+        // this is storage overwritten on each iteration with bytes
+        int bufferSize = 1024;
+        byte[] buffer = new byte[bufferSize];
+
+        // we need to know how may bytes were read to write them to the
+        // byteBuffer
+        int len = 0;
+        while ((len = inputStream.read(buffer)) != -1) {
+            byteBuffer.write(buffer, 0, len);
+        }
+        Log.d("bharti","7");
+        // and then we can return your byte array.
+        return byteBuffer.toByteArray();
+    }
 
 
     public void checkEnabled() {
@@ -353,15 +374,18 @@ public class MainActivity2 extends AppCompatActivity {
                 RequestBody requestBody = RequestBody.create(MediaType.parse("*/*"), files);
             Log.d("bharti", String.valueOf(requestBody));
             Log.d("bharti","9");
-                MultipartBody.Part fileToUpload = MultipartBody.Part.createFormData("file", files.getName(), requestBody);
-            Log.d("bharti", String.valueOf(fileToUpload));
+                MultipartBody.Part avatar = MultipartBody.Part.createFormData("file", files.getName(), requestBody);
+            Log.d("bharti", String.valueOf(avatar));
             Log.d("bharti","10");
-                RequestBody someData = RequestBody.create(MediaType.parse("text/plain"), String.valueOf(myUri));
-            Log.d("bharti", String.valueOf(someData));
+//            String adi= "data:image/png;base64,"+base64;
+                RequestBody base64image = RequestBody.create(MediaType.parse("text/plain"), String.valueOf(base64));
+            Log.d("bharti", String.valueOf(base64image));
             Log.d("bharti","11");
                 apiCall getResponse = apiCall.getRetrofit().create(apiCall.class);
             Log.d("bharti","12");
-                Call<ResponseBody> call = getResponse.addRecord(fileToUpload, someData);
+
+//            Log.d("heloo", adi);
+                Call<ResponseBody> call = getResponse.addRecord(avatar, base64image);
             Log.d("bharti","13");
 
                 call.enqueue(new Callback<ResponseBody>() {
@@ -369,6 +393,9 @@ public class MainActivity2 extends AppCompatActivity {
                     public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                         Log.d("Response", "=" + response.code());
                         Log.d("Response", "= " + response.message());
+                        Log.d("Response", "= " + response.body());
+                        Log.d("Response", "= " + response.raw());
+                        Log.d("Response", "= " + response.toString());
                     }
 
                     @Override

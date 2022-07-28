@@ -29,6 +29,6 @@ public interface apiCall {
 
     @Multipart
     @POST("generate-heatmap")
-    Call<ResponseBody> addRecord(@Part MultipartBody.Part fileToUpload, @Part("somedata") RequestBody requestBody);
+    Call<ResponseBody> addRecord(@Part MultipartBody.Part avatar, @Part("base64image") RequestBody base64image);
 
 }
