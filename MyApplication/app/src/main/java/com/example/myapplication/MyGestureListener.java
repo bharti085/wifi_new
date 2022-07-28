@@ -11,6 +11,8 @@ public class MyGestureListener extends GestureDetector.SimpleOnGestureListener {
     private static final String DEBUG_TAG = "Gestures";
     float x;
     float y;
+    int x1;
+    int x2;
     int i=1;
     int SLNO = 0;
     int rssi;

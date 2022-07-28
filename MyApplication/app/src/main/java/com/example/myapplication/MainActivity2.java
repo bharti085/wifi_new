@@ -91,6 +91,8 @@ public class MainActivity2 extends AppCompatActivity {
     File file;
     float x;
     float y;
+    int x1;
+    int y1;
     ContentResolver resolver;
     String base64;
     private ProgressDialog progress;
@@ -114,7 +116,7 @@ public class MainActivity2 extends AppCompatActivity {
         progress = new ProgressDialog(MainActivity2.this);
         buttonCal.setEnabled(false);
         mDetector = new GestureDetectorCompat(this, new MyGestureListener());
-        scaleGestureDetector = new ScaleGestureDetector(this, new ScaleListener());
+//        scaleGestureDetector = new ScaleGestureDetector(this, new ScaleListener());
         buttonCal.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -130,7 +132,7 @@ public class MainActivity2 extends AppCompatActivity {
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         this.mDetector.onTouchEvent(event);
-        scaleGestureDetector.onTouchEvent(event);
+//        scaleGestureDetector.onTouchEvent(event);
         return super.onTouchEvent(event);
     }
 //    @Override
@@ -138,16 +140,16 @@ public class MainActivity2 extends AppCompatActivity {
 //        scaleGestureDetector.onTouchEvent(motionEvent);
 //        return true;
 //    }
-    private class ScaleListener extends ScaleGestureDetector.SimpleOnScaleGestureListener {
-        @Override
-        public boolean onScale(ScaleGestureDetector scaleGestureDetector) {
-            mScaleFactor *= scaleGestureDetector.getScaleFactor();
-            mScaleFactor = Math.max(0.1f, Math.min(mScaleFactor, 10.0f));
-            imageView2.setScaleX(mScaleFactor);
-            imageView2.setScaleY(mScaleFactor);
-            return true;
-        }
-    }
+//    private class ScaleListener extends ScaleGestureDetector.SimpleOnScaleGestureListener {
+//        @Override
+//        public boolean onScale(ScaleGestureDetector scaleGestureDetector) {
+//            mScaleFactor *= scaleGestureDetector.getScaleFactor();
+//            mScaleFactor = Math.max(0.1f, Math.min(mScaleFactor, 10.0f));
+//            imageView2.setScaleX(mScaleFactor);
+//            imageView2.setScaleY(mScaleFactor);
+//            return true;
+//        }
+//    }
 
     public class MyGestureListener extends GestureDetector.SimpleOnGestureListener {
         private static final String DEBUG_TAG = "Gestures";
@@ -159,12 +161,14 @@ public class MainActivity2 extends AppCompatActivity {
 
             x = event.getX();
             y = event.getY();
+            x1=(int)x;
+            y1=(int)y;
             disp();
             savetofile();
             checkEnabled();
             i++;
             SLNO++;
-            Toast.makeText(MainActivity2.this, "X: " + x + " Y: " + y + "  RSSI:" + rssi, Toast.LENGTH_SHORT).show();
+            Toast.makeText(MainActivity2.this, "X: " + x1 + " Y: " + y1 + "  RSSI:" + rssi, Toast.LENGTH_SHORT).show();
             System.out.println("1");
 
         }
@@ -261,8 +265,8 @@ public class MainActivity2 extends AppCompatActivity {
             Log.d("\t\tRxLinkSpeed=", String.valueOf(RxLinkSpeed));
             Log.d("\t\tTxLinkSpeed=", String.valueOf(TxLinkSpeed));
             Log.d("\t\tOperating band=", String.valueOf(operating_band));
-            Log.d("\t\tX=", String.valueOf(x));
-            Log.d("\t\tY=", String.valueOf(y));
+            Log.d("\t\tX=", String.valueOf(x1));
+            Log.d("\t\tY=", String.valueOf(y1));
             //st12.setText("result"+result);
 //            Toast.makeText(MainActivity2.this,  "RSSI:"+ rssi + "  SSID:" + ssid, Toast.LENGTH_LONG).show();
 
@@ -309,7 +313,7 @@ public class MainActivity2 extends AppCompatActivity {
                 buffered_writer.write("\nNumber of times" + "\tSSID" + "\tRSSI" + "\tX" + "\tY" + "\tFrequency" + "\tLinkSpeed" + "\tRxLinkSpeed" + "\tTxLinkSpeed" + "\toperating_band");
                 System.out.println("5");
             } else {
-                buffered_writer.write("\n" + SLNO + "\t" + ssid + "\t" + rssi + "\t" + x + "\t" + y + "\t" + frequency + "\t" + Linkspeed + "\t" + RxLinkSpeed + "\t" + TxLinkSpeed + "\t" + operating_band);
+                buffered_writer.write("\n" + SLNO + "\t" + ssid + "\t" + rssi + "\t" + x1 + "\t" + y1 + "\t" + frequency + "\t" + Linkspeed + "\t" + RxLinkSpeed + "\t" + TxLinkSpeed + "\t" + operating_band);
                 System.out.println("6");
             }
             System.out.println("7");
@@ -367,26 +371,26 @@ public class MainActivity2 extends AppCompatActivity {
 
 //    private void addTouchListener() {
         private void addRecord() {
-            Log.d("bharti","8");
-            Log.d("bharti", String.valueOf(file));
-                File files = new File(String.valueOf(file));
-            Log.d("bharti", String.valueOf(files));
-                RequestBody requestBody = RequestBody.create(MediaType.parse("*/*"), files);
-            Log.d("bharti", String.valueOf(requestBody));
-            Log.d("bharti","9");
-                MultipartBody.Part avatar = MultipartBody.Part.createFormData("file", files.getName(), requestBody);
-            Log.d("bharti", String.valueOf(avatar));
-            Log.d("bharti","10");
-//            String adi= "data:image/png;base64,"+base64;
+//            Log.d("bharti","8");
+//            Log.d("bharti", String.valueOf(file));
+                File txtFile = new File(String.valueOf(file));
+//            Log.d("bharti", String.valueOf(files));
+                RequestBody requestBody = RequestBody.create(MediaType.parse("text/plain"), txtFile);
+//            Log.d("bharti", String.valueOf(requestBody));
+//            Log.d("bharti","9");
+                MultipartBody.Part avatar = MultipartBody.Part.createFormData("txtFile", txtFile.getName(), requestBody);
+//            Log.d("bharti", String.valueOf(avatar));
+//            Log.d("bharti","10");
+//            String base64data= "data:image/jpeg;base64,"+base64;
                 RequestBody base64image = RequestBody.create(MediaType.parse("text/plain"), String.valueOf(base64));
-            Log.d("bharti", String.valueOf(base64image));
-            Log.d("bharti","11");
+//            Log.d("bharti", String.valueOf(base64image));
+//            Log.d("bharti","11");
                 apiCall getResponse = apiCall.getRetrofit().create(apiCall.class);
-            Log.d("bharti","12");
+//            Log.d("bharti","12");
 
 //            Log.d("heloo", adi);
                 Call<ResponseBody> call = getResponse.addRecord(avatar, base64image);
-            Log.d("bharti","13");
+//            Log.d("bharti","13");
 
                 call.enqueue(new Callback<ResponseBody>() {
                     @Override
@@ -395,7 +399,6 @@ public class MainActivity2 extends AppCompatActivity {
                         Log.d("Response", "= " + response.message());
                         Log.d("Response", "= " + response.body());
                         Log.d("Response", "= " + response.raw());
-                        Log.d("Response", "= " + response.toString());
                     }
 
                     @Override
