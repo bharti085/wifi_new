@@ -7,9 +7,12 @@ import androidx.core.view.GestureDetectorCompat;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
@@ -94,8 +97,10 @@ public class MainActivity2 extends AppCompatActivity {
     int x1;
     int y1;
     ContentResolver resolver;
+    Context incontext;
     String base64;
     private ProgressDialog progress;
+    Uri HeatmapURI;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -111,6 +116,7 @@ public class MainActivity2 extends AppCompatActivity {
         System.out.println("1");
         Log.i("url", String.valueOf(myUri));
         resolver = getContentResolver();
+        incontext = getApplicationContext();
 
         buttonCal = (Button) findViewById(R.id.buttonheatmap);
         progress = new ProgressDialog(MainActivity2.this);
@@ -123,6 +129,8 @@ public class MainActivity2 extends AppCompatActivity {
                 base64=fileUriToBase64(myUri, resolver);
                 Log.d("Bharti", base64);
                 addRecord();
+//                file.delete();
+//                SLNO = 0;
 //                startActivity(new Intent(MainActivity2.this, HeatMapActivity.class));
             }
         });
@@ -164,6 +172,7 @@ public class MainActivity2 extends AppCompatActivity {
             x1=(int)x;
             y1=(int)y;
             disp();
+
             savetofile();
             checkEnabled();
             i++;
@@ -395,11 +404,26 @@ public class MainActivity2 extends AppCompatActivity {
                 call.enqueue(new Callback<ResponseBody>() {
                     @Override
                     public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                        Log.d("Response", "=" + response.code());
-                        Log.d("Response", "= " + response.message());
+//                        Log.d("Response", "=" + response.code());
+//                        Log.d("Response", "= " + response.message());
+                        Log.d("Response", "= " + response);
                         Log.d("Response", "= " + response.body());
-                        Log.d("Response", "= " + response.raw());
+                        Log.d("Response", "= " + response.getClass());
+//                        Log.d("Response", "= " + response.raw());
+                        if(response.code()==200)
+                        {
+                            if (response.body() != null) {
+                                // display the image data in a ImageView or save it
+                                Bitmap bmp = BitmapFactory.decodeStream(response.body().byteStream());
+                                HeatmapURI=getImageUri(incontext, bmp);
+                                Intent intent = new Intent(MainActivity2.this,HeatMapActivity.class);
+                                intent.putExtra("HEATMAP_IMAGEVIEW_BITMAP", HeatmapURI.toString());
+                                startActivity(intent);
+////                                imageView2.setImageBitmap(bmp);
+//                                imageView2.setImageURI(HeatmapURI);
+                        }
                     }
+                        }
 
                     @Override
                     public void onFailure(Call<ResponseBody> call, Throwable t) {
@@ -408,6 +432,13 @@ public class MainActivity2 extends AppCompatActivity {
                     }
                 });
             }
+
+    public Uri getImageUri(Context inContext, Bitmap bmp) {
+        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+        bmp.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
+        String path = MediaStore.Images.Media.insertImage(inContext.getContentResolver(), bmp, "Title", null);
+        return Uri.parse(path);
+    }
 //        });
 //    }
 }
