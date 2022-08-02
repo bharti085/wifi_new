@@ -19,6 +19,7 @@ import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -105,6 +106,9 @@ public class MainActivity2 extends AppCompatActivity {
     private ProgressDialog progress;
     Uri HeatmapURI;
     boolean flag=true;
+    private long then;
+    private int longClickDuration = 5000;
+    int Height,Width;
 
     @SuppressLint("WrongThread")
     @Override
@@ -117,6 +121,23 @@ public class MainActivity2 extends AppCompatActivity {
         System.out.println("1");
         System.out.println("1");
         imageView2.setImageURI(myUri);
+        ViewTreeObserver vto = imageView2.getViewTreeObserver();
+        vto.addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
+            public boolean onPreDraw() {
+                imageView2.getViewTreeObserver().removeOnPreDrawListener(this);
+               Height = imageView2.getMeasuredHeight();
+               Width = imageView2.getMeasuredWidth();
+                Log.d("Width: ", String.valueOf(imageView2.getMeasuredWidth()));
+                Log.d(" Height: ", String.valueOf(imageView2.getMeasuredHeight()));
+                return true;
+            }
+        });
+//        getDropboxIMGSize(myUri);
+//
+//        int width = imageView2.getWidth();
+//        int height = imageView2.getHeight();
+//        Log.i("url", String.valueOf(width));
+//        Log.i("url", String.valueOf(height));
 
 
 
@@ -152,6 +173,42 @@ public class MainActivity2 extends AppCompatActivity {
         progress = new ProgressDialog(MainActivity2.this);
         buttonCal.setEnabled(false);
         mDetector = new GestureDetectorCompat(this, new MyGestureListener());
+
+
+        imageView2.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                mDetector.onTouchEvent(event);
+                return true;
+            }
+//        @RequiresApi(api = Build.VERSION_CODES.M)
+//        @Override
+//        public boolean onTouch(View v, MotionEvent event) {
+//
+//            then = (long) System.currentTimeMillis();
+//            if (event.getAction() == MotionEvent.ACTION_UP) {
+//        if ((System.currentTimeMillis() - then) > longClickDuration) {
+//            /* Implement long click behavior here */
+//            x = event.getX();
+//            y = event.getY();
+//            x1=(int)x;
+//            y1=(int)y;
+//            disp();
+//
+//            savetofile();
+//            checkEnabled();
+//            i++;
+//            SLNO++;
+//            Toast.makeText(MainActivity2.this, "X: " + x1 + " Y: " + y1 + "  RSSI:" + rssi, Toast.LENGTH_SHORT).show();
+//            System.out.println("1");
+//
+//            System.out.println("Long Click has happened!");
+//            return false;
+//        }
+//    }
+//    return true;
+//}
+        });
 //        scaleGestureDetector = new ScaleGestureDetector(this, new ScaleListener());
         buttonCal.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -165,6 +222,16 @@ public class MainActivity2 extends AppCompatActivity {
             }
         });
     }
+//    private void getDropboxIMGSize(Uri uri){
+//        BitmapFactory.Options options = new BitmapFactory.Options();
+//        options.inJustDecodeBounds = true;
+//        BitmapFactory.decodeFile(new File(uri.getPath()).getAbsolutePath(), options);
+//        int imageHeight = options.outHeight;
+//        int imageWidth = options.outWidth;
+//        Log.i("url", String.valueOf(imageHeight));
+//        Log.i("url", String.valueOf(imageWidth));
+//
+//    }
     public String getPath(Uri uri) {
         String[] projection = {MediaStore.MediaColumns.DATA};
         Cursor cursor = managedQuery(uri, projection, null, null, null);
@@ -198,8 +265,6 @@ public class MainActivity2 extends AppCompatActivity {
 //        }
 //    }
 
-
-
     public class MyGestureListener extends GestureDetector.SimpleOnGestureListener {
         private static final String DEBUG_TAG = "Gestures";
 
@@ -208,10 +273,22 @@ public class MainActivity2 extends AppCompatActivity {
         public void onLongPress(MotionEvent event) {
             Log.d(DEBUG_TAG, "onDown: " + event.toString());
 
+//            int[] viewCoords = new int[2];
+//            imageView2.getLocationOnScreen(viewCoords);
+//            Log.d("image coordinates", String.valueOf(viewCoords[0]));
+//            Log.d("image coordinates", String.valueOf(viewCoords[1]));
+//
+//            int touchX = (int) event.getX();
+//            int touchY = (int) event.getY();
+//            Log.d("image coordinates", String.valueOf(touchX));
+//            Log.d("image coordinates", String.valueOf(touchY));
+//            x1 = touchX; // viewCoords[0] is the X coordinate
+//            y1 = touchY ;//- viewCoords[1];
+
             x = event.getX();
             y = event.getY();
             x1=(int)x;
-            y1=(int)y;
+            y1= Height - (int)y;
             disp();
 
             savetofile();

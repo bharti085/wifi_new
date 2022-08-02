@@ -4,6 +4,8 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GestureDetectorCompat;
 
+import android.gesture.GestureLibraries;
+import android.gesture.GestureOverlayView;
 import android.hardware.GeomagneticField;
 import android.os.Build;
 import android.os.Bundle;
@@ -26,7 +28,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         imageView2 = (ImageView) findViewById(R.id.imageView);
-        MyGestureListener ob1= new MyGestureListener();
+//        MyGestureListener ob1= new MyGestureListener();
         mDetector = new GestureDetectorCompat(this, new MyGestureListener());
         imageView2.setOnTouchListener(new View.OnTouchListener() {
             @RequiresApi(api = Build.VERSION_CODES.M)
@@ -52,6 +54,7 @@ class MyGestureListener extends GestureDetector.SimpleOnGestureListener {
     float x;
     float y;
     int i=1;
+
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     public void onLongPress(MotionEvent event) {
