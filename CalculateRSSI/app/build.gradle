@@ -43,9 +43,9 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 //    implementation 'com.github.karthyks:runtime-permissions:1.8'
 //    implementation 'com.google.android.gms:play-services-location:19.0.1'
-////
+//
 //    implementation 'com.androidx:design:25.1.1'
-////    implementation 'com.github.karthyks:runtime-permissions:1.8'
+//    implementation 'com.github.karthyks:runtime-permissions:1.8'
 
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'

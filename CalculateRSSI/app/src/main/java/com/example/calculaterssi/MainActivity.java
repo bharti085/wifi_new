@@ -3,12 +3,9 @@ package com.example.calculaterssi;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
@@ -16,7 +13,6 @@ import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.RequiresApi;
@@ -25,23 +21,14 @@ import androidx.appcompat.app.AppCompatActivity;
 //import com.github.karthyks.runtimepermissions.googleapi.LocationSettingsHelper;
 //import com.google.android.gms.location.LocationRequest;
 
-import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
-import java.security.acl.Permission;
-import java.security.acl.Permission;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-
-
-import android.os.Bundle;
-
-//import com.google.android.gms.location.LocationRequest;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -78,13 +65,31 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 disp();
                 savetofile();
+//                boolean a;
+//                boolean b;
+//                a=isExternalStorageWritable();
+//                b=isExternalStorageReadable();
+//                Log.d("Number of times=" , String.valueOf(a));
+//                Log.d("Number of times=" , String.valueOf(b));
 //                checkStoragePermission();
 //                checkLocationSettings();
                 SLNO++;
 
 
             }
+
+
         });
+    }
+
+    private boolean isExternalStorageWritable() {
+        return Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED);
+    }
+
+    // Checks if a volume containing external storage is available to at least read.
+    private boolean isExternalStorageReadable() {
+        return Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED) ||
+                Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED_READ_ONLY);
     }
 
 //    private void checkStoragePermission() {
@@ -223,8 +228,9 @@ public class MainActivity extends AppCompatActivity {
         File directory = null;
 
         directory = new File(Environment.getExternalStorageDirectory() + java.io.File.separator + "WSS");
-        if (!directory.exists())
-            Toast.makeText(this, (directory.mkdirs() ? "Directory has been created" : "Directory not created"), Toast.LENGTH_SHORT).show();
+        directory.mkdirs();
+//        if (!directory.exists())
+//            Toast.makeText(this, (directory.mkdirs() ? "Directory has been created" : "Directory not created"), Toast.LENGTH_SHORT).show();
 
         System.out.println(directory);
         file = new File(Environment.getExternalStorageDirectory() + java.io.File.separator + "WSS" + java.io.File.separator + "WSS.txt");
@@ -239,15 +245,23 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
+
         try {
+            System.out.println("2");
             OutputStreamWriter file_writer = new OutputStreamWriter(new FileOutputStream(file, true));
+            System.out.println("3");
             BufferedWriter buffered_writer = new BufferedWriter(file_writer);
+            System.out.println("4");
             if (SLNO==0) {
                 buffered_writer.write("\nNumber of times" + "\tSSID" + "\tRSSI" + "\tFrequency" + "\tLinkSpeed" + "\tRxLinkSpeed" + "\tTxLinkSpeed" + "\toperating_band");
+                System.out.println("5");
             }
+
             else {
                 buffered_writer.write("\n" + SLNO + "\t" + ssid + "\t" + rssi + "\t" + frequency + "\t" + Linkspeed + "\t" + RxLinkSpeed + "\t" + TxLinkSpeed + "\t" + operating_band);
+                System.out.println("6");
             }
+            System.out.println("7");
             buffered_writer.close();
         } catch (IOException e) {
             e.printStackTrace();

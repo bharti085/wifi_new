@@ -2,6 +2,8 @@ package com.example.myapplication;
 
 
 
+import java.util.concurrent.TimeUnit;
+
 import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
@@ -19,7 +21,11 @@ public interface apiCall {
 //    Retrofit retrofit = null;
 
     public static Retrofit getRetrofit() {
-        OkHttpClient okHttpClient = new OkHttpClient.Builder().build();
+        OkHttpClient okHttpClient = new OkHttpClient.Builder()
+                .connectTimeout(5, TimeUnit.MINUTES) // connect timeout
+                .writeTimeout(5, TimeUnit.MINUTES) // write timeout
+                .readTimeout(5, TimeUnit.MINUTES) // read timeout
+                .build();
 
         Retrofit retrofit = new Retrofit.Builder().baseUrl(BASE_URL).
                     addConverterFactory(GsonConverterFactory.create()).client(okHttpClient).build();
@@ -29,6 +35,6 @@ public interface apiCall {
 
     @Multipart
     @POST("generate-heatmap")
-    Call<ResponseBody> addRecord(@Part MultipartBody.Part avatar, @Part("base64image") RequestBody base64image);
-
+    Call<ResponseBody> addRecord(@Part MultipartBody.Part avatar, @Part MultipartBody.Part parts);
+//    @Part("base64image") RequestBody base64image
 }
